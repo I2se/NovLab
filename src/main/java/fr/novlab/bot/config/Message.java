@@ -26,8 +26,8 @@ public enum Message {
             "The loop has been set to **" + "%s" + "**"),
     NOTRACKCURRENTLY("Pas de musique en cours",
             "There is no track playing currently"),
-    NOWPLAYING("En cours : `" + "%s" + "` par `" + "%s" + "` (Lien: <" + "%s" + ">)",
-            "Now Playing `" + "%s" + "` by `" + "%s" + "` (Link: <" + "%s" + ">)"),
+    NOWPLAYING("En cours : `" + "%s" + "` par `" + "%s",
+            "Now Playing `" + "%s" + "` by `" + "%s"),
     STOPMUSIC("Musique arreté et file d'attente vidé",
             "Music stop and queue cleared"),
     QUEUEEMPTY("La file d'attente est vide",
@@ -35,7 +35,9 @@ public enum Message {
     MIXMUSIC("Un mix de %s musiques a été fait",
             "A mix of %s musics has been apply"),
     VOLUMESET("Volume mis a %s pourcent",
-            "Volume fix to %s percent");
+            "Volume fix to %s percent"),
+    DONTHAVEPERMS("Vous n'avez pas les permissions",
+            "You don't have permission");
 
     private String messageFrench;
     private String messageEnglish;

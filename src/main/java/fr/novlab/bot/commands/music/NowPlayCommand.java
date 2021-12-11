@@ -12,6 +12,8 @@ import fr.novlab.bot.music.PlayerManager;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 @CommandExist
 @CommandInfo(
@@ -55,6 +57,7 @@ public class NowPlayCommand extends Command {
 
         AudioTrackInfo info = track.getInfo();
 
-        event.reply(Message.getMessage(Message.NOWPLAYING, event.getGuild(), info.title, info.author, info.uri)).queue();
+        event.reply(Message.getMessage(Message.NOWPLAYING, event.getGuild(), info.title, info.author))
+                .addActionRow(Button.link(info.uri, "Open Link")).queue();
     }
 }

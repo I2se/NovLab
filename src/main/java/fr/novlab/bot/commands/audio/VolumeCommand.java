@@ -9,6 +9,7 @@ import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;
 import fr.novlab.bot.config.Message;
+import fr.novlab.bot.config.Perms;
 import fr.novlab.bot.music.GuildMusicManager;
 import fr.novlab.bot.music.PlayerManager;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -19,7 +20,8 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 @CommandInfo(
         name = "volume",
         description = "Fix the volume of the bot",
-        usage = "<vol='Percent':int>"
+        usage = "<vol='Percent':int>",
+        permission = Perms.DJ
 )
 public class VolumeCommand extends Command {
     @Override

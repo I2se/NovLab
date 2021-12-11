@@ -1,5 +1,7 @@
 package fr.novlab.bot.commands.manager;
 
+import fr.novlab.bot.config.Perms;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +14,7 @@ public @interface CommandInfo {
     String name();
     String usage();
     String description();
-    String permission() default "";
+    Perms permission() default Perms.ALL;
     Class<? extends SubCommand<?>>[] subCommands() default {};
     boolean autoManagingSubCommands() default true;
     boolean autoCheckPermission() default true;

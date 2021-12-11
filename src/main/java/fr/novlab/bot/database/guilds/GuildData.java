@@ -10,11 +10,14 @@ public class GuildData {
     private String name;
     @BsonProperty(value = "language")
     private Language language;
+    @BsonProperty(value = "dj")
+    private String roleIdDJ;
 
-    public GuildData(String guildId, String name, Language language) {
+    public GuildData(String guildId, String name, Language language, String roleDj) {
         this.guildId = guildId;
         this.name = name;
         this.language = language;
+        this.roleIdDJ = roleDj;
     }
 
     public GuildData() {
@@ -43,5 +46,13 @@ public class GuildData {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public String getRoleIdDJ() {
+        return roleIdDJ;
+    }
+
+    public void setRoleIdDJ(String roleIdDJ) {
+        this.roleIdDJ = roleIdDJ;
     }
 }

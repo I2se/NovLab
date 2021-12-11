@@ -24,7 +24,7 @@ public class OnGuildJoin extends ListenerAdapter implements EventListener {
             });
             LOGGER.info("Connected to guild : " + guild.getName());
         } else {
-            GuildData guildData = new GuildData(guild.getId(), guild.getName(), Language.ENGLISH);
+            GuildData guildData = new GuildData(guild.getId(), guild.getName(), Language.ENGLISH, "");
             GuildService.addGuild(guildData);
             LOGGER.info("Database creation for guild : " + guild.getName());
         }

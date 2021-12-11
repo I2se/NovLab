@@ -1,6 +1,11 @@
 package fr.novlab.bot.commands.manager;
 
 import fr.novlab.bot.commands.manager.arg.ArgReader;
+import fr.novlab.bot.config.Message;
+import fr.novlab.bot.config.Perms;
+import fr.novlab.bot.database.guilds.GuildService;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -50,7 +55,21 @@ public abstract class Command {
         this.currentEvent = event;
 
         if (this.commandInfo.autoCheckPermission()) {
-            // TODO : CHECK PERMISSION
+            if(!this.commandInfo.permission().equals(Perms.ALL)) {
+                if(this.commandInfo.permission().equals(Perms.DJ)) {
+                    if(!GuildService.getGuild(event.getGuild().getId()).getRoleIdDJ().equals("")) {
+                        Role role = event.getGuild().getRoleById(GuildService.getGuild(event.getGuild().getId()).getRoleIdDJ());
+                        if(!event.getMember().getRoles().contains(role)) {
+                            event.reply(Message.getMessage(Message.DONTHAVEPERMS, event.getGuild())).queue();
+                        }
+                    }
+                }
+                if(this.commandInfo.permission().equals(Perms.ADMIN)) {
+                    if(!event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+                        event.reply(Message.getMessage(Message.DONTHAVEPERMS, event.getGuild())).queue();
+                    }
+                }
+            }
         }
 
         if (this instanceof CommandParent) {

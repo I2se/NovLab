@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import fr.novlab.bot.commands.audio.VolumeCommand;
 import fr.novlab.bot.commands.music.JoinCommand;
 import fr.novlab.bot.commands.manager.CommandRegistry;
+import fr.novlab.bot.commands.staff.SetDJ;
 import fr.novlab.bot.config.Config;
 import fr.novlab.bot.database.guilds.GuildData;
 import fr.novlab.bot.database.guilds.GuildService;
@@ -56,6 +57,7 @@ public class Main {
         commandRegistry.registerDefaults();
         commandRegistry.registerAllCommandsIn(JoinCommand.class.getPackageName());
         commandRegistry.registerAllCommandsIn(VolumeCommand.class.getPackageName());
+        commandRegistry.registerAllCommandsIn(SetDJ.class.getPackageName());
         commandRegistry.updateDiscord();
 
         jda.addEventListener(commandRegistry, new OnGuildJoin());
@@ -89,7 +91,7 @@ public class Main {
                     guildData.setName(guild.getName());
                 });
             } else {
-                GuildData guildData = new GuildData(guildId, guild.getName(), Language.ENGLISH);
+                GuildData guildData = new GuildData(guildId, guild.getName(), Language.ENGLISH, "");
                 GuildService.addGuild(guildData);
                 LOGGER.info("Database creation for guild : " + guild.getName());
             }
