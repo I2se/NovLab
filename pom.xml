@@ -23,6 +23,11 @@
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter</name>
+            <url>http://jcenter.bintray.com/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -61,6 +66,11 @@
             <groupId>se.michaelthelin.spotify</groupId>
             <artifactId>spotify-web-api-java</artifactId>
             <version>7.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.natanbc</groupId>
+            <artifactId>lavadsp</artifactId>
+            <version>0.7.4</version>
         </dependency>
     </dependencies>
 </project>

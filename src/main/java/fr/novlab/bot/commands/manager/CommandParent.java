@@ -36,7 +36,6 @@ public abstract class CommandParent extends Command {
             this.subCommands.get(event.getSubcommandName()).internallyExecute(event);
             return true;
         }
-
         return false;
     }
 

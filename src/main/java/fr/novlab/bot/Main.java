@@ -20,7 +20,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.LoggerFactory;
-import se.michaelthelin.spotify.SpotifyApi;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -43,7 +42,6 @@ public class Main {
     private Main() throws LoginException {
         try {
             jda = JDABuilder.createDefault(Config.TOKEN)
-                    .addEventListeners(new OnGuildJoin())
                     .build()
                     .awaitReady();
         } catch (InterruptedException e) {

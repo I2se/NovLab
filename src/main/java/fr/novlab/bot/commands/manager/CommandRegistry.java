@@ -6,6 +6,8 @@ import fr.novlab.bot.commands.manager.arg.CharAR;
 import fr.novlab.bot.commands.manager.arg.StringAR;
 import fr.novlab.bot.commands.manager.arg.discord.*;
 import fr.novlab.bot.commands.manager.arg.number.*;
+import fr.novlab.bot.commands.manager.utils.DiscordCommandConverter;
+import fr.novlab.bot.config.Config;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -96,37 +98,95 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
 
 
     public void updateDiscord() {
-        LOGGER.info("Update Discord commands");
+        LOGGER.info("Update Discord Commands");
 
-        List<net.dv8tion.jda.api.interactions.commands.Command> discordCommands = this.jda.retrieveCommands().complete();
-        for (net.dv8tion.jda.api.interactions.commands.Command discordCommand : discordCommands) {
-            if (this.commands.containsKey(discordCommand.getName())) {
-                CommandParent command = this.commands.get(discordCommand.getName());
-                CommandData commandData = command.getCommandData();
+        /**
+         * CommandListUpdateAction CMDS = NovLab.getApi().updateCommands();
+         *         Map<String, Command> cmds = new HashMap<>();
+         *         List<String> prohibitedCMDS = new ArrayList<>(List.of("play", "setrole", "setstaff", "setchannel", "suggestion"));
+         *         commands.forEach((s, command) -> {
+         *             if(!prohibitedCMDS.contains(s)) {
+         *                 cmds.put(s, command);
+         *             }
+         *         });
+         *         CMDS.queue();
+         */
 
-                if (commandData.toData().toJson() == discordCommand.getOptions()) {
+        {
+            List<net.dv8tion.jda.api.interactions.commands.Command> discordCommands = this.jda.retrieveCommands().complete();
+            for (net.dv8tion.jda.api.interactions.commands.Command discordCommand : discordCommands) {
+                if (this.commands.containsKey(discordCommand.getName())) {
+                    Command command = this.commands.get(discordCommand.getName());
+                    CommandData commandData = command.getCommandData();
 
-                    LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
-                    this.jda.editCommandById(discordCommand.getId())
-                            .setDescription(command.getCommandInfo().description())
-                            .clearOptions()
-                            .addOptions(options)
+                    LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
+
+                    if (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) {
+                        LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
+
+                        discordCommand.editCommand()
+                                .setDescription(command.getCommandInfo().description())
+                                .clearOptions()
+                                .addOptions(commandData.getOptions())
+                                .queue();
+                    }
+                } else {
+                    String commandName = discordCommand.getName();
+                    LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
+                    discordCommand.delete().queue();
+                    LOGGER.info("Command \"" + commandName + "\" delete");
+                }
+            }
+
+            this.commands.forEach((name, command) -> {
+                if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
+                    LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
+                    this.jda.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description())
+                            .addOptions(command.getCommandData().getOptions())
                             .queue();
                 }
-            } else {
-                LOGGER.info("Command \"" + discordCommand.getName() + "\" need to be deleted!");
-                this.jda.deleteCommandById(discordCommand.getId()).queue();
-            }
+            });
         }
 
-        this.commands.forEach((name, command) -> {
-            if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
-                LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
-                this.jda.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description())
-                        .addOptions(command.getCommandData().getOptions())
-                        .queue();
+        for (String guildId : Config.TEST_SERVERS_ID) {
+            Guild guild = this.jda.getGuildById(guildId);
+
+            if (guild != null) {
+                List<net.dv8tion.jda.api.interactions.commands.Command> discordCommands = guild.retrieveCommands().complete();
+                for (net.dv8tion.jda.api.interactions.commands.Command discordCommand : discordCommands) {
+                    if (this.commands.containsKey(discordCommand.getName())) {
+                        Command command = this.commands.get(discordCommand.getName());
+                        CommandData commandData = command.getCommandData();
+
+                        LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
+
+                        if (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) {
+                            LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
+
+                            discordCommand.editCommand()
+                                    .setDescription(command.getCommandInfo().description())
+                                    .clearOptions()
+                                    .addOptions(commandData.getOptions())
+                                    .queue();
+                        }
+                    } else {
+                        String commandName = discordCommand.getName();
+                        LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
+                        discordCommand.delete().queue();
+                        LOGGER.info("Command \"" + commandName + "\" delete");
+                    }
+                }
+
+                this.commands.forEach((name, command) -> {
+                    if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
+                        LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
+                        guild.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description())
+                                .addOptions(command.getCommandData().getOptions())
+                                .queue();
+                    }
+                });
             }
-        });
+        }
     }
 
     public void registerCommand(Class<? extends CommandParent> clazz) {

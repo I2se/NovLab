@@ -12,7 +12,7 @@ public @interface CommandInfo {
     String name();
     String usage();
     String description();
-    String permission();
+    String permission() default "";
     Class<? extends SubCommand<?>>[] subCommands() default {};
     boolean autoManagingSubCommands() default true;
     boolean autoCheckPermission() default true;

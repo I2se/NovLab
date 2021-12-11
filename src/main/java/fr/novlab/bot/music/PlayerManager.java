@@ -19,7 +19,7 @@ import java.util.Map;
 public class PlayerManager {
 
     private static PlayerManager INSTANCE;
-    private static final Logger logger = LoggerFactory.getLogger(PlayerManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayerManager.class);
 
     private final Map<Long, GuildMusicManager> musicManagers;
     private final AudioPlayerManager audioPlayerManager;
@@ -45,6 +45,7 @@ public class PlayerManager {
 
         if(trackURL.contains("open.spotify.com")) {
             List<String> listTrack = SpotifyConverter.identify(trackURL, event);
+            event.reply("Loading Music From Spotify").queue();
             for (String s : listTrack) {
                 String search = "ytsearch:" + s;
                 this.audioPlayerManager.loadItemOrdered(musicManager, search, new AudioLoadResultHandler() {
@@ -56,7 +57,7 @@ public class PlayerManager {
                                 .append("` by `")
                                 .append(track.getInfo().author)
                                 .append("`");
-                        logger.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
+                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
                         event.reply(msg.toString()).queue();
                     }
                     @Override
@@ -80,7 +81,7 @@ public class PlayerManager {
                             .append("` by `")
                             .append(audioTrack.getInfo().author)
                             .append("`");
-                    logger.info(event.getGuild().getName() + " - Listen Music " + audioTrack.getInfo().title + " - " + audioTrack.getInfo().author);
+                    LOGGER.info(event.getGuild().getName() + " - Listen Music " + audioTrack.getInfo().title + " - " + audioTrack.getInfo().author);
                     event.reply(msg.toString()).queue();
                 }
                 @Override
@@ -92,7 +93,7 @@ public class PlayerManager {
                                 .append("` musics from playlist `")
                                 .append(playlist.getName())
                                 .append("`");
-                        logger.info(event.getGuild().getName() + " - Listen Music " + playlist.getName() + " - " + tracks.size());
+                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + playlist.getName() + " - " + tracks.size());
                         event.reply(msg.toString()).queue();
                         for (AudioTrack track : tracks) {
                             musicManager.scheduler.queue(track);

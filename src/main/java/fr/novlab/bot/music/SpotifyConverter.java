@@ -1,9 +1,12 @@
 package fr.novlab.bot.music;
 
 import fr.novlab.bot.Main;
+import fr.novlab.bot.commands.manager.CommandRegistry;
 import fr.novlab.bot.config.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.apache.hc.core5.http.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.specification.*;
@@ -19,7 +22,7 @@ import java.util.List;
 
 public class SpotifyConverter {
 
-    private static SpotifyApi spotifyApi = Main.getSpotifyApi();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpotifyConverter.class);
 
     // Track
     // https://open.spotify.com/track/4fouWK6XVHhzl78KzQ1UjL?si=33827e88cf5240f8
@@ -49,12 +52,15 @@ public class SpotifyConverter {
     }
 
     public static String trackSpotify(String id) {
-        GetTrackRequest getTrackRequest = spotifyApi.getTrack(id).build();
+        LOGGER.info("Convert Track for : " + id);
         try {
-            Track track = getTrackRequest.execute();
-            String searchMusic = track.getName() + " " + Arrays.toString(track.getArtists());
-            return searchMusic;
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            Track track = SpotifyHelper.doRequest(spotifyApi -> spotifyApi.getTrack(id).build().execute());
+            StringBuilder musicStrId = new StringBuilder(track.getName() + " ");
+            for (ArtistSimplified artist : track.getArtists()) {
+                musicStrId.append(artist.getName()).append(" ");
+            }
+            return musicStrId.toString();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "Error";
@@ -95,8 +101,7 @@ public class SpotifyConverter {
     public static String returnId(String url) {
         int index = url.indexOf('?');
         int lastIndex = url.lastIndexOf('/');
-        String id = (String) url.subSequence(index, lastIndex);
-        System.out.println(id);
+        String id = (String) url.subSequence(lastIndex + 1, index);
         return id;
     }
 }
