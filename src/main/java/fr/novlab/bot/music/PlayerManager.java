@@ -62,6 +62,16 @@ public class PlayerManager {
                     }
                     @Override
                     public void playlistLoaded(AudioPlaylist playlist) {
+                        AudioTrack track = playlist.getTracks().get(0);
+                        musicManager.scheduler.queue(track);
+                        StringBuilder msg = new StringBuilder("Adding to queue: `")
+                                .append(track.getInfo().title)
+                                .append("` by `")
+                                .append(track.getInfo().author)
+                                .append("`");
+                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
+                        event.getChannel().sendTyping().queue();
+                        event.getChannel().sendMessage(msg.toString()).queue();
                     }
                     @Override
                     public void noMatches() {

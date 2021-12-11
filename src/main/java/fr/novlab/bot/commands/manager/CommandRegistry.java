@@ -31,18 +31,20 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
 
     private final JDA jda;
     private final Map<Class<?>, ArgReader<?>> argReaderRegistry;
-    private final Map<String, CommandParent> commands;
+    private final Map<String, Command> commands;
+    private final DiscordCommandConverter commandConverter;
 
     public CommandRegistry(JDA jda) {
         this.jda = jda;
         this.argReaderRegistry = new HashMap<>();
         this.commands = new HashMap<>();
+        this.commandConverter = new DiscordCommandConverter();
     }
 
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         if (this.commands.containsKey(event.getName())) {
-            CommandParent command = this.commands.get(event.getName());
+            Command command = this.commands.get(event.getName());
             command.internallyExecute(event);
         }
     }
@@ -82,7 +84,7 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
     public void registerAllCommandsIn(String packageName) {
         Reflections reflections = new Reflections(packageName);
 
-        reflections.getSubTypesOf(CommandParent.class).forEach(commandClass -> {
+        reflections.getSubTypesOf(Command.class).forEach(commandClass -> {
             try {
                 if (commandClass.getPackage().getName().startsWith(packageName)
                         && !Modifier.isAbstract(commandClass.getModifiers()) && !Modifier.isInterface(commandClass.getModifiers())
@@ -95,7 +97,6 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
             }
         });
     }
-
 
     public void updateDiscord() {
         LOGGER.info("Update Discord Commands");
@@ -189,9 +190,9 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
         }
     }
 
-    public void registerCommand(Class<? extends CommandParent> clazz) {
+    public void registerCommand(Class<? extends Command> clazz) {
         try {
-            CommandParent command = clazz.getDeclaredConstructor().newInstance();
+            Command command = clazz.getDeclaredConstructor().newInstance();
             command.setCommandRegistry(this);
 
             this.commands.put(command.getCommandInfo().name(), command);

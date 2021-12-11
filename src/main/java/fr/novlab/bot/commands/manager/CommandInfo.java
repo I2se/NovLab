@@ -16,4 +16,6 @@ public @interface CommandInfo {
     Class<? extends SubCommand<?>>[] subCommands() default {};
     boolean autoManagingSubCommands() default true;
     boolean autoCheckPermission() default true;
+    boolean hasSubcommandGroups() default false;
+    SubCommandDefinition[] subcommandGroups() default {};
 }

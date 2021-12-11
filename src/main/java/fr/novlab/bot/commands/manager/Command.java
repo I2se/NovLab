@@ -3,6 +3,7 @@ package fr.novlab.bot.commands.manager;
 import fr.novlab.bot.commands.manager.arg.ArgReader;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public abstract class Command {
             throw new IllegalStateException("The class " + this.getClass().getName() + " needs to have a CommandInfo" +
                     " annotation in order to get infos");
         }
+    }
+
+    public CommandData getCommandData() {
+        return new CommandData(this.getCommandInfo().name(), this.getCommandInfo().description())
+                .addOptions(this.parseOptions());
     }
 
     public void internallyExecute(SlashCommandEvent event) {
@@ -84,6 +90,7 @@ public abstract class Command {
 
         for (String arg : args) {
             Matcher matcher = OPTION_PATTERN.matcher(arg);
+            matcher.find();
 
             boolean required = matcher.group(1).equals("<");
             String argName = matcher.group(2);

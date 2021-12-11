@@ -6,8 +6,8 @@ public abstract class SubCommand<T extends CommandParent> extends Command {
 
     private T parent;
 
-    public SubcommandData getCommandData() {
-        return new SubcommandData(this.getCommandInfo().name(), this.getCommandInfo().description())
+    public SubcommandData getSubCommandData() {
+        return new SubcommandData(this.getCommandInfo().name().contains(":") ? this.getCommandInfo().name().split(":")[1] : this.getCommandInfo().name(), this.getCommandInfo().description())
                 .addOptions(this.parseOptions());
     }
 

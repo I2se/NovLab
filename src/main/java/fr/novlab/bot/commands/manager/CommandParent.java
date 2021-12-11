@@ -2,8 +2,10 @@ package fr.novlab.bot.commands.manager;
 
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,9 +28,28 @@ public abstract class CommandParent extends Command {
     }
 
     public CommandData getCommandData() {
-        return new CommandData(this.getCommandInfo().name(), this.getCommandInfo().description())
-                .addOptions(this.parseOptions())
-                .addSubcommands(this.subCommands.values().stream().map(SubCommand::getCommandData).collect(Collectors.toList()));
+        if (this.getCommandInfo().hasSubcommandGroups()) {
+            Map<String, SubcommandGroupData> subcommandGroups = new HashMap<>();
+            for (SubCommandDefinition definition : this.getCommandInfo().subcommandGroups()) {
+                subcommandGroups.put(definition.name(), new SubcommandGroupData(definition.name(), definition.description()));
+            }
+
+            for (SubCommand<?> subCommand : this.subCommands.values()) {
+                String groupName = subCommand.getCommandInfo().name().contains(":") ? subCommand.getCommandInfo().name().split(":")[0] : subCommand.getCommandInfo().name();
+
+                if (!subcommandGroups.containsKey(groupName)) {
+                    subcommandGroups.put(groupName, new SubcommandGroupData(groupName, "unknown").addSubcommands(subCommand.getSubCommandData()));
+                } else {
+                    subcommandGroups.get(groupName).addSubcommands(subCommand.getSubCommandData());
+                }
+            }
+
+            return new CommandData(this.getCommandInfo().name(), this.getCommandInfo().description())
+                    .addSubcommandGroups(subcommandGroups.values());
+        } else {
+            return new CommandData(this.getCommandInfo().name(), this.getCommandInfo().description())
+                    .addSubcommands(this.subCommands.values().stream().map(SubCommand::getSubCommandData).collect(Collectors.toList()));
+        }
     }
 
     public boolean executeSubCommands(SlashCommandEvent event) {

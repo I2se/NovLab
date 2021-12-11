@@ -67,32 +67,30 @@ public class SpotifyConverter {
     }
 
     public static List<String> playlistSpotify(String id) {
-        GetPlaylistRequest getPlaylistRequest = spotifyApi.getPlaylist(id).build();
         try {
-            Playlist playlist = getPlaylistRequest.execute();
+            Playlist playlist = SpotifyHelper.doRequest(spotifyApi -> spotifyApi.getPlaylist(id).build().execute());
             List<PlaylistTrack> playlistTrackList = Arrays.asList(playlist.getTracks().getItems());
             List<String> list = new ArrayList<>();
             for (PlaylistTrack playlistTrack : playlistTrackList) {
                 list.add(trackSpotify(playlistTrack.getTrack().getId()));
             }
             return list;
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return List.of("Error");
     }
 
     public static List<String> albumSpotify(String id) {
-        GetAlbumRequest getAlbumRequest = spotifyApi.getAlbum(id).build();
         try {
-            Album album = getAlbumRequest.execute();
+            Album album = SpotifyHelper.doRequest(spotifyApi -> spotifyApi.getAlbum(id).build().execute());
             List<TrackSimplified> trackSimplifieds = Arrays.asList(album.getTracks().getItems());
             List<String> list = new ArrayList<>();
             for (TrackSimplified trackSimplified : trackSimplifieds) {
                 list.add(trackSpotify(trackSimplified.getId()));
             }
             return list;
-        } catch (IOException | SpotifyWebApiException | ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return List.of("Error");

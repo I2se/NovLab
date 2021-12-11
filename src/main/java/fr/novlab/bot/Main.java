@@ -7,11 +7,15 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import fr.novlab.bot.commands.audio.VolumeCommand;
+import fr.novlab.bot.commands.music.JoinCommand;
+import fr.novlab.bot.commands.manager.CommandRegistry;
 import fr.novlab.bot.config.Config;
 import fr.novlab.bot.database.guilds.GuildData;
 import fr.novlab.bot.database.guilds.GuildService;
 import fr.novlab.bot.database.guilds.Language;
 import fr.novlab.bot.listeners.OnGuildJoin;
+import fr.novlab.bot.music.SpotifyHelper;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -31,7 +35,6 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 public class Main {
 
     private static JDA jda;
-    private static SpotifyApi spotifyApi;
     private static MongoCollection<GuildData> collectionGuilds;
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -49,10 +52,15 @@ public class Main {
         }
         LOGGER.info("{} is ready", jda.getSelfUser().getAsTag());
 
-        spotifyApi = new SpotifyApi.Builder()
-                .setClientId(Config.CLIENTID)
-                .setClientSecret(Config.CLIENTSECRET)
-                .build();
+        CommandRegistry commandRegistry = new CommandRegistry(jda);
+        commandRegistry.registerDefaults();
+        commandRegistry.registerAllCommandsIn(JoinCommand.class.getPackageName());
+        commandRegistry.registerAllCommandsIn(VolumeCommand.class.getPackageName());
+        commandRegistry.updateDiscord();
+
+        jda.addEventListener(commandRegistry, new OnGuildJoin());
+
+        SpotifyHelper.login();
 
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb");
@@ -86,10 +94,6 @@ public class Main {
                 LOGGER.info("Database creation for guild : " + guild.getName());
             }
         }
-    }
-
-    public static SpotifyApi getSpotifyApi() {
-        return spotifyApi;
     }
 
     public static MongoCollection<GuildData> getCollectionGuilds() {
