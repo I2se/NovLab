@@ -21,11 +21,16 @@ public abstract class CommandParent extends Command {
             try {
                 SubCommand<?> subCommand = clazz.getDeclaredConstructor().newInstance();
                 subCommand.setParent(this);
+
+                this.subCommands.put(subCommand.getCommandInfo().name(), subCommand);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    @Override
+    public void execute(SlashCommandEvent event) {}
 
     public CommandData getCommandData() {
         if (this.getCommandInfo().hasSubcommandGroups()) {

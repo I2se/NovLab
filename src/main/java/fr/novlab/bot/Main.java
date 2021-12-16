@@ -8,13 +8,15 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import fr.novlab.bot.commands.audio.VolumeCommand;
-import fr.novlab.bot.commands.music.JoinCommand;
 import fr.novlab.bot.commands.manager.CommandRegistry;
+import fr.novlab.bot.commands.music.JoinCommand;
+import fr.novlab.bot.commands.playlists.PlaylistCommand;
 import fr.novlab.bot.commands.staff.SetDJ;
 import fr.novlab.bot.config.Config;
 import fr.novlab.bot.database.guilds.GuildData;
 import fr.novlab.bot.database.guilds.GuildService;
 import fr.novlab.bot.database.guilds.Language;
+import fr.novlab.bot.database.playlists.PlaylistData;
 import fr.novlab.bot.listeners.OnGuildJoin;
 import fr.novlab.bot.music.SpotifyHelper;
 import net.dv8tion.jda.api.JDA;
@@ -37,6 +39,7 @@ public class Main {
 
     private static JDA jda;
     private static MongoCollection<GuildData> collectionGuilds;
+    private static MongoCollection<PlaylistData> collectionPlaylists;
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws LoginException {
@@ -58,6 +61,7 @@ public class Main {
         commandRegistry.registerAllCommandsIn(JoinCommand.class.getPackageName());
         commandRegistry.registerAllCommandsIn(VolumeCommand.class.getPackageName());
         commandRegistry.registerAllCommandsIn(SetDJ.class.getPackageName());
+        commandRegistry.registerAllCommandsIn(PlaylistCommand.class.getPackageName());
         commandRegistry.updateDiscord();
 
         jda.addEventListener(commandRegistry, new OnGuildJoin());
@@ -78,6 +82,7 @@ public class Main {
         MongoClient mongoClient = MongoClients.create(Config.MONGOURI);
         MongoDatabase mongoDatabase = mongoClient.getDatabase("bot");
         collectionGuilds = mongoDatabase.getCollection("guilds", GuildData.class).withCodecRegistry(codecRegistry);
+        collectionPlaylists = mongoDatabase.getCollection("playlists", PlaylistData.class).withCodecRegistry(codecRegistry);
         connectionToGuild();
     }
 
@@ -100,6 +105,10 @@ public class Main {
 
     public static MongoCollection<GuildData> getCollectionGuilds() {
         return collectionGuilds;
+    }
+
+    public static MongoCollection<PlaylistData> getCollectionPlaylists() {
+        return collectionPlaylists;
     }
 
     public static JDA getJda() {

@@ -3,12 +3,8 @@ package fr.novlab.bot.commands.staff;
 import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;
-import fr.novlab.bot.commands.manager.arg.discord.RoleAR;
-import fr.novlab.bot.config.Message;
 import fr.novlab.bot.config.Perms;
 import fr.novlab.bot.database.guilds.GuildService;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 

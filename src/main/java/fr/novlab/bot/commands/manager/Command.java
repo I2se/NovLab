@@ -124,6 +124,10 @@ public abstract class Command {
 
     public abstract void execute(SlashCommandEvent event);
 
+    public boolean isArgPresent(String name) {
+        return this.currentEvent.getOption(name) != null;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T readOptionalArg(String name, T defaultValue) {
         return (T) this.readArg(name, defaultValue.getClass(), defaultValue);

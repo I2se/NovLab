@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
 public @interface CommandInfo {
 
     String name();
-    String usage();
-    String description();
+    String usage() default "";
+    String description() default "";
     Perms permission() default Perms.ALL;
     Class<? extends SubCommand<?>>[] subCommands() default {};
     boolean autoManagingSubCommands() default true;

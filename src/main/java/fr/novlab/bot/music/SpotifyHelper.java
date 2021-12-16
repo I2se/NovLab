@@ -12,8 +12,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SpotifyHelper {
 

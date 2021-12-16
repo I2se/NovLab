@@ -1,20 +1,11 @@
 package fr.novlab.bot.music;
 
-import fr.novlab.bot.Main;
-import fr.novlab.bot.commands.manager.CommandRegistry;
 import fr.novlab.bot.config.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.specification.*;
-import se.michaelthelin.spotify.requests.data.albums.GetAlbumRequest;
-import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistRequest;
-import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +50,7 @@ public class SpotifyConverter {
             for (ArtistSimplified artist : track.getArtists()) {
                 musicStrId.append(artist.getName()).append(" ");
             }
+            LOGGER.info(musicStrId.toString());
             return musicStrId.toString();
         } catch (Exception e) {
             e.printStackTrace();

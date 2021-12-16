@@ -1,10 +1,5 @@
 package fr.novlab.bot.commands.audio;
 
-import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
-import com.sedmelluq.discord.lavaplayer.filter.equalizer.Equalizer;
-import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerConfiguration;
-import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;

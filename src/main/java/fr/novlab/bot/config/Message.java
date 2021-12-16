@@ -37,7 +37,11 @@ public enum Message {
     VOLUMESET("Volume mis a %s pourcent",
             "Volume fix to %s percent"),
     DONTHAVEPERMS("Vous n'avez pas les permissions",
-            "You don't have permission");
+            "You don't have permission"),
+    INCORRECTLINK("Lien incorrect",
+            "Invalid Link"),
+    PLADD("Musique %s ajoutée a votre playlist",
+            "Music %s add to your playlist");
 
     private String messageFrench;
     private String messageEnglish;

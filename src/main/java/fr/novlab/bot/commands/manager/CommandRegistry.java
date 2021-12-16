@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandRegistry extends ListenerAdapter implements EventListener {
 
@@ -164,11 +167,21 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                         if (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) {
                             LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
 
-                            discordCommand.editCommand()
+                            CommandEditAction action = discordCommand.editCommand()
                                     .setDescription(command.getCommandInfo().description())
-                                    .clearOptions()
-                                    .addOptions(commandData.getOptions())
-                                    .queue();
+                                    .clearOptions();
+
+                            if (command instanceof CommandParent) {
+                                if (command.getCommandInfo().hasSubcommandGroups()) {
+                                    action = action.addSubcommandGroups(commandData.getSubcommandGroups());
+                                } else {
+                                    action = action.addSubcommands(commandData.getSubcommands());
+                                }
+                            } else {
+                                action = action.addOptions(commandData.getOptions());
+                            }
+
+                            action.queue();
                         }
                     } else {
                         String commandName = discordCommand.getName();
@@ -181,9 +194,26 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                 this.commands.forEach((name, command) -> {
                     if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
                         LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
-                        guild.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description())
-                                .addOptions(command.getCommandData().getOptions())
-                                .queue();
+
+                        final AtomicReference<CommandCreateAction> action = new AtomicReference<>(guild.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description()));
+
+                        if (command instanceof CommandParent) {
+                            if (command.getCommandInfo().hasSubcommandGroups()) {
+                                command.getCommandData().getSubcommandGroups().forEach(subcommandGroupData -> {
+                                    action.set(action.get().addSubcommandGroups(subcommandGroupData));
+                                });
+                            } else {
+                                command.getCommandData().getSubcommands().forEach(subcommandData -> {
+                                    action.set(action.get().addSubcommands(subcommandData));
+                                });
+                            }
+                        } else {
+                            command.getCommandData().getOptions().forEach(optionData -> {
+                                action.set(action.get().addOptions(optionData));
+                            });
+                        }
+
+                        action.get().queue();
                     }
                 });
             }

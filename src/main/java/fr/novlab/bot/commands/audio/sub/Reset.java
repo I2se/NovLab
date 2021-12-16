@@ -6,10 +6,10 @@ import fr.novlab.bot.commands.manager.SubCommand;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 @CommandInfo(
-        name = "karaoke",
-        description = "Effect Karaoke"
+        name = "reset",
+        description = "Reset all effects"
 )
-public class Karaoke extends SubCommand<FilterCommand> {
+public class Reset extends SubCommand<FilterCommand> {
 
     @Override
     public void execute(SlashCommandEvent event) {
