@@ -4,7 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import fr.novlab.bot.Main;
-import fr.novlab.bot.database.guilds.GuildData;
 import org.bson.Document;
 
 import java.util.function.Consumer;

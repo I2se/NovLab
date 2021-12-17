@@ -1,12 +1,10 @@
 package fr.novlab.bot.commands.playlists.sub;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import fr.novlab.bot.commands.manager.CommandInfo;
 import fr.novlab.bot.commands.manager.SubCommand;
 import fr.novlab.bot.commands.playlists.PlaylistCommand;
 import fr.novlab.bot.config.Message;
 import fr.novlab.bot.database.playlists.PlaylistService;
-import fr.novlab.bot.music.GuildMusicManager;
 import fr.novlab.bot.music.PlayerManager;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;

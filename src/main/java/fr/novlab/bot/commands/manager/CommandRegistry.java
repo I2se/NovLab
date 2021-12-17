@@ -34,7 +34,7 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
 
     private final JDA jda;
     private final Map<Class<?>, ArgReader<?>> argReaderRegistry;
-    private final Map<String, Command> commands;
+    public final Map<String, Command> commands;
     private final DiscordCommandConverter commandConverter;
 
     public CommandRegistry(JDA jda) {
@@ -102,7 +102,7 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
     }
 
     public void updateDiscord() {
-        LOGGER.info("Update Discord Commands");
+        //LOGGER.info("Update Discord Commands");
 
         /**
          * CommandListUpdateAction CMDS = NovLab.getApi().updateCommands();
@@ -123,10 +123,10 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                     Command command = this.commands.get(discordCommand.getName());
                     CommandData commandData = command.getCommandData();
 
-                    LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
+                    //LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
 
                     if (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) {
-                        LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
+                        //LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
 
                         discordCommand.editCommand()
                                 .setDescription(command.getCommandInfo().description())
@@ -136,15 +136,15 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                     }
                 } else {
                     String commandName = discordCommand.getName();
-                    LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
+                    //LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
                     discordCommand.delete().queue();
-                    LOGGER.info("Command \"" + commandName + "\" delete");
+                    //LOGGER.info("Command \"" + commandName + "\" delete");
                 }
             }
 
             this.commands.forEach((name, command) -> {
                 if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
-                    LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
+                    //LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
                     this.jda.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description())
                             .addOptions(command.getCommandData().getOptions())
                             .queue();
@@ -162,10 +162,10 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                         Command command = this.commands.get(discordCommand.getName());
                         CommandData commandData = command.getCommandData();
 
-                        LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
+                        //LOGGER.info("Command Update State " + (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) + " " + command.getCommandInfo().name());
 
                         if (!commandData.toData().toString().equals(this.commandConverter.toCommandData(discordCommand).toData().toString())) {
-                            LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
+                            //LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be edited!");
 
                             CommandEditAction action = discordCommand.editCommand()
                                     .setDescription(command.getCommandInfo().description())
@@ -185,15 +185,15 @@ public class CommandRegistry extends ListenerAdapter implements EventListener {
                         }
                     } else {
                         String commandName = discordCommand.getName();
-                        LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
+                        //LOGGER.info("Command \"" + commandName + "\" need to be deleted!");
                         discordCommand.delete().queue();
-                        LOGGER.info("Command \"" + commandName + "\" delete");
+                        //LOGGER.info("Command \"" + commandName + "\" delete");
                     }
                 }
 
                 this.commands.forEach((name, command) -> {
                     if (discordCommands.stream().noneMatch(discordCommand -> discordCommand.getName().equals(name))) {
-                        LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
+                        //LOGGER.info("Command \"" + command.getCommandInfo().name() + "\" need to be created!");
 
                         final AtomicReference<CommandCreateAction> action = new AtomicReference<>(guild.upsertCommand(command.getCommandInfo().name(), command.getCommandInfo().description()));
 

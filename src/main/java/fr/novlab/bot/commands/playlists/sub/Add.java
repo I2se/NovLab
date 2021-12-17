@@ -12,10 +12,8 @@ import fr.novlab.bot.music.AudioHelper;
 import fr.novlab.bot.music.GuildMusicManager;
 import fr.novlab.bot.music.LinkType;
 import fr.novlab.bot.music.PlayerManager;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 
 import java.util.List;
 

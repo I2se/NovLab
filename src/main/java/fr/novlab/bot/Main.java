@@ -47,6 +47,12 @@ public class Main {
     }
 
     private Main() throws LoginException {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLogger = loggerContext.getLogger("org.mongodb");
+        rootLogger.setLevel(Level.OFF);
+        LoggerContext loggerContextRefec = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLoggerRefec = loggerContextRefec.getLogger("org.reflections");
+        rootLoggerRefec.setLevel(Level.OFF);
         try {
             jda = JDABuilder.createDefault(Config.TOKEN)
                     .build()
@@ -54,7 +60,6 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        LOGGER.info("{} is ready", jda.getSelfUser().getAsTag());
 
         CommandRegistry commandRegistry = new CommandRegistry(jda);
         commandRegistry.registerDefaults();
@@ -68,12 +73,7 @@ public class Main {
 
         SpotifyHelper.login();
 
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger rootLogger = loggerContext.getLogger("org.mongodb");
-        rootLogger.setLevel(Level.OFF);
-        LOGGER.info("Disabling Log MongoDB");
-
-        Main.executeOnReady();
+        printInitialize(commandRegistry);
     }
 
     public static void executeOnReady() {
@@ -83,24 +83,47 @@ public class Main {
         MongoDatabase mongoDatabase = mongoClient.getDatabase("bot");
         collectionGuilds = mongoDatabase.getCollection("guilds", GuildData.class).withCodecRegistry(codecRegistry);
         collectionPlaylists = mongoDatabase.getCollection("playlists", PlaylistData.class).withCodecRegistry(codecRegistry);
+        LOGGER.info("Register Collections :");
+        LOGGER.info("- Guilds");
+        LOGGER.info("- Playlists");
         connectionToGuild();
     }
 
     public static void connectionToGuild() {
+        LOGGER.info("Connecting to all guilds :");
         for (Guild guild : jda.getGuilds()) {
             guild.getAudioManager().closeAudioConnection();
             String guildId = guild.getId();
             if(GuildService.isRegistered(guildId)) {
-                LOGGER.info("Connected to guild : " + guild.getName());
+                LOGGER.info("- " + guild.getName());
                 GuildService.updateGuild(guildId, guildData -> {
                     guildData.setName(guild.getName());
                 });
             } else {
                 GuildData guildData = new GuildData(guildId, guild.getName(), Language.ENGLISH, "");
                 GuildService.addGuild(guildData);
-                LOGGER.info("Database creation for guild : " + guild.getName());
+                LOGGER.info("- " + guild.getName() + " (Database Creation)");
             }
         }
+    }
+
+    public void printInitialize(CommandRegistry commandRegistry) {
+        LOGGER.info("===================================");
+        LOGGER.info("Start Bot " + jda.getSelfUser().getAsTag());
+        LOGGER.info("Register Events :");
+        jda.getEventManager().getRegisteredListeners().forEach(o -> {
+            LOGGER.info("- " + o.getClass().getSimpleName());
+        });
+        LOGGER.info("Register Commands :");
+        commandRegistry.commands.forEach((s, command) -> {
+            String letter = String.valueOf(s.charAt(0));
+            String maj = letter.toUpperCase();
+            String name = s.replace(s.charAt(0), maj.toCharArray()[0]);
+            LOGGER.info("- " + name + " : " + command.getClass().getSimpleName());
+        });
+        Main.executeOnReady();
+        LOGGER.info("{} is ready", jda.getSelfUser().getAsTag());
+        LOGGER.info("===================================");
     }
 
     public static MongoCollection<GuildData> getCollectionGuilds() {
