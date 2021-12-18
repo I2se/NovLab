@@ -19,6 +19,8 @@ import fr.novlab.bot.database.guilds.Language;
 import fr.novlab.bot.database.playlists.PlaylistData;
 import fr.novlab.bot.listeners.OnGuildJoin;
 import fr.novlab.bot.music.SpotifyHelper;
+import fr.novlab.bot.socket.APIConnection;
+import fr.novlab.bot.socket.AppType;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.dv8tion.jda.api.JDA;

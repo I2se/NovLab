@@ -1,28 +1,28 @@
 package fr.novlab.bot.socket;
 
-import com.google.gson.JsonObject;
+import org.json.JSONObject;
 
 public class Response {
 
-    private final int requestId;
-    private final int status;
-    private final JsonObject content;
+    private final String requestId;
+    private final String statusCode;
+    private final JSONObject content;
 
-    public Response(int requestId, int status, JsonObject content) {
+    public Response(String requestId, String statusCode, JSONObject content) {
         this.requestId = requestId;
-        this.status = status;
+        this.statusCode = statusCode;
         this.content = content;
     }
 
-    public int getRequestId() {
+    public String getRequestId() {
         return requestId;
     }
 
-    public int getStatus() {
-        return status;
+    public String getStatusCode() {
+        return statusCode;
     }
 
-    public JsonObject getContent() {
+    public JSONObject getContent() {
         return content;
     }
 }
