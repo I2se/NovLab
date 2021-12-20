@@ -25,14 +25,14 @@ public class VolumeCommand extends Command {
         GuildVoiceState botVoiceState = bot.getVoiceState();
         Member member = event.getMember();
 
-        if (!botVoiceState.inVoiceChannel()) {
+        if (!botVoiceState.inAudioChannel()) {
             event.reply(Message.getMessage(Message.BOTNOTINVOICECHANNEL, event.getGuild())).queue();
             return;
         }
 
         GuildVoiceState memberVoiceState = member.getVoiceState();
 
-        if (!memberVoiceState.inVoiceChannel()) {
+        if (!memberVoiceState.inAudioChannel()) {
             event.reply(Message.getMessage(Message.NOTINVOICECHANNEL, event.getGuild())).queue();
             return;
         }

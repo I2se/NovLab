@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;
+import fr.novlab.bot.commands.music.utils.Verification;
 import fr.novlab.bot.config.Message;
 import fr.novlab.bot.music.GuildMusicManager;
 import fr.novlab.bot.music.PlayerManager;
@@ -19,30 +20,18 @@ import java.util.Random;
 @CommandExist
 @CommandInfo(
         name = "mix",
-        description = "This command mix the queue",
-        usage = ""
+        description = "This command mix the queue"
 )
 public class MixCommand extends Command {
+
     @Override
     public void execute(SlashCommandEvent event) {
         Member bot = event.getGuild().getSelfMember();
-        GuildVoiceState botVoiceState = bot.getVoiceState();
         Member member = event.getMember();
+        GuildVoiceState botVS = bot.getVoiceState();
+        GuildVoiceState memberVS = member.getVoiceState();
 
-        if (!botVoiceState.inVoiceChannel()) {
-            event.reply(Message.getMessage(Message.BOTNOTINVOICECHANNEL, event.getGuild())).queue();
-            return;
-        }
-
-        GuildVoiceState memberVoiceState = member.getVoiceState();
-
-        if(!memberVoiceState.inVoiceChannel()) {
-            event.reply(Message.getMessage(Message.NOTINVOICECHANNEL, event.getGuild())).queue();
-            return;
-        }
-
-        if(!memberVoiceState.getChannel().equals(botVoiceState.getChannel())) {
-            event.reply(Message.getMessage(Message.NOTINSAMEVOICECHANNEL, event.getGuild())).queue();
+        if(!Verification.isInTheSameChannel(botVS, memberVS, event)) {
             return;
         }
 

@@ -5,6 +5,7 @@ C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\guil
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\music\AudioHelper.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\LoopCommand.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\audio\VolumeCommand.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\Subscriber.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\LeaveCommand.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\config\Config.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\music\PlayerManager.java
@@ -24,12 +25,16 @@ C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\musi
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\number\LongAR.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\music\LinkType.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\playlists\sub\Add.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\AppType.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\StopCommand.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\music\SpotifyHelper.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\playlists\PlaylistData.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\discord\MessageChannelAR.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\requests\UsersController.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\users\User.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\guilds\GuildService.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\playlists\sub\Play.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\IRequestCallback.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\number\ShortAR.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\CommandRegistry.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\NowPlayCommand.java
@@ -37,7 +42,10 @@ C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\mana
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\music\GuildMusicManager.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\PlayCommand.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\CharAR.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\music\utils\Verification.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\staff\SetDJ.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\subscribers\heartbeat\HeartbeatRequest.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\Response.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\SubCommand.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\listeners\OnGuildJoin.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\config\Message.java
@@ -47,8 +55,10 @@ C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\play
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\playlists\sub\List.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\StringAR.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\discord\UserAR.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\subscribers\heartbeat\HeartbeatTimeout.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\database\guilds\GuildData.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\discord\MemberAR.java
+C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\socket\APIConnection.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\config\Perms.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\number\DoubleAR.java
 C:\Users\behag\Documents\GitHub\NovLab\src\main\java\fr\novlab\bot\commands\manager\arg\number\IntegerAR.java

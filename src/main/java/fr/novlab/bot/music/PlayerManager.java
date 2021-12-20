@@ -58,7 +58,6 @@ public class PlayerManager {
                                 .append(track.getInfo().author)
                                 .append("`");
                         LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
-                        event.reply(msg.toString()).queue();
                     }
                     @Override
                     public void playlistLoaded(AudioPlaylist playlist) {
@@ -71,7 +70,6 @@ public class PlayerManager {
                                 .append("`");
                         LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
                         event.getChannel().sendTyping().queue();
-                        event.getChannel().sendMessage(msg.toString()).queue();
                     }
                     @Override
                     public void noMatches() {

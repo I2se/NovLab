@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 @CommandExist
 @CommandInfo(
         name = "queue",
-        description = "See the queue of the bot",
-        usage = ""
+        description = "See the queue of the bot"
 )
 public class QueueCommand extends Command {
 

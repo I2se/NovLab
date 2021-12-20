@@ -21,8 +21,6 @@ import fr.novlab.bot.listeners.OnGuildJoin;
 import fr.novlab.bot.music.SpotifyHelper;
 import fr.novlab.bot.socket.APIConnection;
 import fr.novlab.bot.socket.AppType;
-import io.socket.client.IO;
-import io.socket.client.Socket;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -31,9 +29,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.LoggerFactory;
+
 import javax.security.auth.login.LoginException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Scanner;
+
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -43,6 +43,7 @@ public class Main {
     private static JDA jda;
     private static MongoCollection<GuildData> collectionGuilds;
     private static MongoCollection<PlaylistData> collectionPlaylists;
+    private static APIConnection apiConnection;
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws LoginException {
@@ -137,5 +138,9 @@ public class Main {
 
     public static JDA getJda() {
         return jda;
+    }
+
+    public static APIConnection getApiConnection() {
+        return apiConnection;
     }
 }

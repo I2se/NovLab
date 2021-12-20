@@ -29,13 +29,13 @@ public class Play extends SubCommand<PlaylistCommand> {
         GuildVoiceState botVoiceState = bot.getVoiceState();
         GuildVoiceState memberVoiceState = member.getVoiceState();
 
-        if(!memberVoiceState.inVoiceChannel()) {
+        if(!memberVoiceState.inAudioChannel()) {
             event.reply(Message.getMessage(Message.NOTINVOICECHANNEL, event.getGuild())).queue();
             return;
         }
 
         AudioManager audioManager = channel.getGuild().getAudioManager();
-        VoiceChannel memberChannel = memberVoiceState.getChannel();
+        VoiceChannel memberChannel = (VoiceChannel) memberVoiceState.getChannel();
 
         if(!channel.getGuild().getAudioManager().isConnected()) {
             audioManager.openAudioConnection(memberChannel);

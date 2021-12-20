@@ -1,30 +1,21 @@
 package fr.novlab.bot.socket;
 
-import fr.novlab.bot.socket.subscribers.HeartbeatRequest;
-import fr.novlab.bot.socket.subscribers.HeartbeatTimeout;
+import fr.novlab.bot.socket.subscribers.heartbeat.HeartbeatRequest;
+import fr.novlab.bot.socket.subscribers.heartbeat.HeartbeatTimeout;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
-import io.socket.engineio.client.EngineIOException;
-import io.socket.engineio.client.transports.WebSocket;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 public class APIConnection {
 
-    public static void main(String[] args) {
-        APIConnection apiConnection = new APIConnection(AppType.BOT, "01fbwai8aka9qlc7eado422ye4ujapsxk2vtnfqb");
-        apiConnection.start("http://localhost:8000");
-    }
-
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(APIConnection.class);
 
     private final AppType appType;
     private final String apiKey;
@@ -116,6 +107,8 @@ public class APIConnection {
 
     public void registerRequestChannels() {
         this.registerRequestChannel("heartbeat:answer");
+        this.registerRequestChannel("users:create");
+        this.registerRequestChannel("users:delete");
     }
 
     public void registerRequestChannel(String channel) {

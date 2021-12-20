@@ -1,12 +1,14 @@
-package fr.novlab.bot.socket.subscribers;
+package fr.novlab.bot.socket.subscribers.heartbeat;
 
 import fr.novlab.bot.socket.APIConnection;
-import fr.novlab.bot.socket.Response;
 import fr.novlab.bot.socket.Subscriber;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 
 public class HeartbeatRequest implements Subscriber {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(HeartbeatRequest.class);
 
     @Override
     public void on(APIConnection connection, JSONObject response) throws JSONException {
@@ -14,13 +16,10 @@ public class HeartbeatRequest implements Subscriber {
         int timeLeft = response.getInt("timeLeft");
         String question = response.getString("question");
 
-        System.out.println("Received heartbeat request : ");
-        System.out.println("msg : " + msg);
-        System.out.println("timeLeft : " + timeLeft);
-        System.out.println("question : " + question);
+        LOGGER.info("Rcv HB Req : " + msg + " // " + timeLeft + " // " + question);
 
         connection.send("heartbeat:answer", (response1 -> {
-            System.out.println("Heartbeat answer result : " + response1.getStatusCode());
+            LOGGER.info("HB Result : " + response1.getStatusCode() + (response1.getStatusCode().equals("500") ? " // " + response1.getContent().getString("error") : ""));
         }), question);
     }
 

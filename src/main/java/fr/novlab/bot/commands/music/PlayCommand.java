@@ -3,14 +3,11 @@ package fr.novlab.bot.commands.music;
 import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;
-import fr.novlab.bot.config.Message;
+import fr.novlab.bot.commands.music.utils.Verification;
 import fr.novlab.bot.music.PlayerManager;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,28 +22,13 @@ public class PlayCommand extends Command {
 
     @Override
     public void execute(SlashCommandEvent event) {
-        TextChannel channel = (TextChannel) event.getChannel();
         Member bot = event.getGuild().getSelfMember();
         Member member = event.getMember();
-        GuildVoiceState botVoiceState = bot.getVoiceState();
-        GuildVoiceState memberVoiceState = member.getVoiceState();
+        GuildVoiceState botVS = bot.getVoiceState();
+        GuildVoiceState memberVS = member.getVoiceState();
 
-        if(!memberVoiceState.inVoiceChannel()) {
-            event.reply(Message.getMessage(Message.NOTINVOICECHANNEL, event.getGuild())).queue();
+        if(!Verification.isInTheSameChannel(botVS, memberVS, event)) {
             return;
-        }
-
-        AudioManager audioManager = channel.getGuild().getAudioManager();
-        VoiceChannel memberChannel = memberVoiceState.getChannel();
-
-        if(!channel.getGuild().getAudioManager().isConnected()) {
-            audioManager.openAudioConnection(memberChannel);
-            event.reply(Message.getMessage(Message.CONNECTEDTOCHANNEL, event.getGuild(), memberChannel.getName())).queue();
-        } else {
-            if(!memberVoiceState.getChannel().equals(botVoiceState.getChannel())) {
-                event.reply(Message.getMessage(Message.NOTINSAMEVOICECHANNEL, event.getGuild())).queue();
-                return;
-            }
         }
 
         String song = this.readRequiredArg("song", String.class);
