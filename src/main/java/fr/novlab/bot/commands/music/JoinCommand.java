@@ -5,15 +5,12 @@ import fr.novlab.bot.commands.manager.CommandExist;
 import fr.novlab.bot.commands.manager.CommandInfo;
 import fr.novlab.bot.commands.music.utils.Verification;
 import fr.novlab.bot.config.Message;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
-
-import java.awt.*;
 
 @CommandExist
 @CommandInfo(

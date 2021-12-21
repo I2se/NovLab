@@ -29,8 +29,10 @@ public class SpotifyConverter {
             if(url.contains("track")) {
                 return Collections.singletonList(trackSpotify(returnId(url)));
             } else if(url.contains("album")) {
+                event.reply(Message.getMessage(Message.WAITINGSPOTIFY, event.getGuild())).queue();
                 return albumSpotify(returnId(url));
             } else if(url.contains("playlist")) {
+                event.reply(Message.getMessage(Message.WAITINGSPOTIFY, event.getGuild())).queue();
                 return playlistSpotify(returnId(url));
             } else {
                 event.reply(Message.getMessage(Message.SPOTIFYLINKINVALID, event.getGuild())).queue();

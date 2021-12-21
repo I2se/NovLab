@@ -7,10 +7,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import fr.novlab.bot.commands.audio.VolumeCommand;
+import fr.novlab.bot.commands.music.VolumeCommand;
 import fr.novlab.bot.commands.manager.CommandRegistry;
 import fr.novlab.bot.commands.music.JoinCommand;
-import fr.novlab.bot.commands.playlists.PlaylistCommand;
 import fr.novlab.bot.commands.staff.SetDJ;
 import fr.novlab.bot.config.Config;
 import fr.novlab.bot.database.guilds.GuildData;
@@ -57,6 +56,7 @@ public class Main {
         LoggerContext loggerContextRefec = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLoggerRefec = loggerContextRefec.getLogger("org.reflections");
         rootLoggerRefec.setLevel(Level.OFF);
+        
         try {
             jda = JDABuilder.createDefault(Config.TOKEN)
                     .build()
@@ -70,7 +70,6 @@ public class Main {
         commandRegistry.registerAllCommandsIn(JoinCommand.class.getPackageName());
         commandRegistry.registerAllCommandsIn(VolumeCommand.class.getPackageName());
         commandRegistry.registerAllCommandsIn(SetDJ.class.getPackageName());
-        commandRegistry.registerAllCommandsIn(PlaylistCommand.class.getPackageName());
         commandRegistry.updateDiscord();
 
         jda.addEventListener(commandRegistry, new OnGuildJoin());

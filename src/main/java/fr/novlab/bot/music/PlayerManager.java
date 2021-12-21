@@ -1,11 +1,8 @@
 package fr.novlab.bot.music;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -45,85 +42,19 @@ public class PlayerManager {
 
         if(trackURL.contains("open.spotify.com")) {
             List<String> listTrack = SpotifyConverter.identify(trackURL, event);
-            event.reply("Loading Music From Spotify").queue();
-            for (String s : listTrack) {
-                String search = "ytsearch:" + s;
-                this.audioPlayerManager.loadItemOrdered(musicManager, search, new AudioLoadResultHandler() {
-                    @Override
-                    public void trackLoaded(AudioTrack track) {
-                        musicManager.scheduler.queue(track);
-                        StringBuilder msg = new StringBuilder("Adding to queue: `")
-                                .append(track.getInfo().title)
-                                .append("` by `")
-                                .append(track.getInfo().author)
-                                .append("`");
-                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
-                    }
-                    @Override
-                    public void playlistLoaded(AudioPlaylist playlist) {
-                        AudioTrack track = playlist.getTracks().get(0);
-                        musicManager.scheduler.queue(track);
-                        StringBuilder msg = new StringBuilder("Adding to queue: `")
-                                .append(track.getInfo().title)
-                                .append("` by `")
-                                .append(track.getInfo().author)
-                                .append("`");
-                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + track.getInfo().title + " - " + track.getInfo().author);
-                        event.getChannel().sendTyping().queue();
-                    }
-                    @Override
-                    public void noMatches() {
-                    }
-                    @Override
-                    public void loadFailed(FriendlyException exception) {
-                    }
-                });
+            if(listTrack.size() >= 2) {
+                for (AudioTrack audioTrack : TrackManager.getTrack(listTrack, LinkType.SPOTIFY, true, event, musicManager, audioPlayerManager)) {
+                    musicManager.scheduler.queue(audioTrack);
+                }
+            } else {
+                for (AudioTrack audioTrack : TrackManager.getTrack(listTrack, LinkType.SPOTIFY, false, event, musicManager, audioPlayerManager)) {
+                    musicManager.scheduler.queue(audioTrack);
+                }
             }
         } else {
-            this.audioPlayerManager.loadItemOrdered(musicManager, trackURL, new AudioLoadResultHandler() {
-                @Override
-                public void trackLoaded(AudioTrack audioTrack) {
-                    musicManager.scheduler.queue(audioTrack);
-                    StringBuilder msg = new StringBuilder("Adding to queue: `")
-                            .append(audioTrack.getInfo().title)
-                            .append("` by `")
-                            .append(audioTrack.getInfo().author)
-                            .append("`");
-                    LOGGER.info(event.getGuild().getName() + " - Listen Music " + audioTrack.getInfo().title + " - " + audioTrack.getInfo().author);
-                    event.reply(msg.toString()).queue();
-                }
-                @Override
-                public void playlistLoaded(AudioPlaylist playlist) {
-                    if(trackURL.contains("https://youtube.com/playlist")) {
-                        List<AudioTrack> tracks = playlist.getTracks();
-                        StringBuilder msg = new StringBuilder("Adding to queue: `")
-                                .append(String.valueOf(tracks.size()))
-                                .append("` musics from playlist `")
-                                .append(playlist.getName())
-                                .append("`");
-                        LOGGER.info(event.getGuild().getName() + " - Listen Music " + playlist.getName() + " - " + tracks.size());
-                        event.reply(msg.toString()).queue();
-                        for (AudioTrack track : tracks) {
-                            musicManager.scheduler.queue(track);
-                        }
-                    } else {
-                        AudioTrack audioTrack = playlist.getTracks().get(0);
-                        musicManager.scheduler.queue(audioTrack);
-                        StringBuilder msg = new StringBuilder("Adding to queue: `")
-                                .append(audioTrack.getInfo().title)
-                                .append("` by `")
-                                .append(audioTrack.getInfo().author)
-                                .append("`");
-
-                        event.reply(msg.toString()).queue();
-                        playlist.getTracks().clear();
-                    }
-                }
-                @Override
-                public void noMatches() {}
-                @Override
-                public void loadFailed(FriendlyException e) {}
-            });
+            for (AudioTrack audioTrack : TrackManager.getTrack(List.of(trackURL), LinkType.YOUTUBE, false, event, musicManager, audioPlayerManager)) {
+                musicManager.scheduler.queue(audioTrack);
+            }
         }
     }
 

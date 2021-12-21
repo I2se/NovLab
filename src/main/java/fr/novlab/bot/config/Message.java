@@ -38,10 +38,14 @@ public enum Message {
             "Volume fix to %s percent"),
     DONTHAVEPERMS("Vous n'avez pas les permissions",
             "You don't have permission"),
-    INCORRECTLINK("Lien incorrect",
-            "Invalid Link"),
-    PLADD("Musique %s ajoutée a votre playlist",
-            "Music %s add to your playlist");
+    FAILEDTOLOAD("Impossible de charger la musique : %s",
+            "Failed to load music : %s"),
+    NOMATCH("Aucune correspondance pour : %s",
+            "No matchs for : %s"),
+    LOADFROMSPOTIFY("%s musiques ont était ajouté a la file d'attente",
+            "%s musics added to queue"),
+    WAITINGSPOTIFY("Chargement des musiques depuis Spotify (Merci de patientez)",
+            "Loading musics from Spotify... (Please Wait)");
 
     private String messageFrench;
     private String messageEnglish;

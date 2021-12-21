@@ -25,7 +25,7 @@ public class Verification {
             }
             VoiceChannel channel = (VoiceChannel) voiceStateMember.getChannel();
             channel.getGuild().getAudioManager().openAudioConnection(channel);
-            return false;
+            return true;
         }
         event.reply(Message.getMessage(Message.NOTINVOICECHANNEL, event.getGuild())).queue();
         return false;

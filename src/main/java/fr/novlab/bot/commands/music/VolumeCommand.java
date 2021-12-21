@@ -1,4 +1,4 @@
-package fr.novlab.bot.commands.audio;
+package fr.novlab.bot.commands.music;
 
 import fr.novlab.bot.commands.manager.Command;
 import fr.novlab.bot.commands.manager.CommandExist;
@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
         permission = Perms.DJ
 )
 public class VolumeCommand extends Command {
+
     @Override
     public void execute(SlashCommandEvent event) {
         Member bot = event.getGuild().getSelfMember();
