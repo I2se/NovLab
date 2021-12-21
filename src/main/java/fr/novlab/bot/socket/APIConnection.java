@@ -40,11 +40,7 @@ public class APIConnection {
 
             this.socket.on(Socket.EVENT_CONNECT_ERROR, objects -> {
                 for (Object object : objects) {
-                    System.out.println(object);
-
-                    if (object instanceof EngineIOException ) {
-                        System.out.println(((EngineIOException) object).code);
-                    }
+                    LOGGER.error("Error during connection: " + object);
                 }
             });
 
@@ -67,7 +63,7 @@ public class APIConnection {
     }
 
     public void send(String event, IRequestCallback callback, Object... args) {
-        String requestId = this.generateRandomString(16);
+        String requestId = this.generateRandomString(64);
 
         if (callback != null) {
             Thread thread = new Thread(() -> {
