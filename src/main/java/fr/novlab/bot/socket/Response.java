@@ -5,10 +5,10 @@ import org.json.JSONObject;
 public class Response {
 
     private final String requestId;
-    private final String statusCode;
+    private final int statusCode;
     private final JSONObject content;
 
-    public Response(String requestId, String statusCode, JSONObject content) {
+    public Response(String requestId, int statusCode, JSONObject content) {
         this.requestId = requestId;
         this.statusCode = statusCode;
         this.content = content;
@@ -18,7 +18,7 @@ public class Response {
         return requestId;
     }
 
-    public String getStatusCode() {
+    public int getStatusCode() {
         return statusCode;
     }
 

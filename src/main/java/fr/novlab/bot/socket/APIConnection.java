@@ -104,6 +104,7 @@ public class APIConnection {
     public void registerRequestChannels() {
         this.registerRequestChannel("heartbeat:answer");
         this.registerRequestChannel("users:create");
+        this.registerRequestChannel("users:get");
         this.registerRequestChannel("users:delete");
     }
 
@@ -116,7 +117,7 @@ public class APIConnection {
                 JSONObject jsonResponse = (JSONObject) objects[0];
                 Response response = new Response(
                     jsonResponse.getString("requestId"),
-                    jsonResponse.getString("statusCode"),
+                    jsonResponse.getInt("statusCode"),
                     jsonResponse.getJSONObject("content")
                 );
 

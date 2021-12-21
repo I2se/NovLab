@@ -50,6 +50,12 @@ public class Main {
     }
 
     private Main() throws LoginException {
+        apiConnection = new APIConnection(AppType.BOT, Config.API_KEYS);
+        apiConnection.start("http://3865-2a01-cb05-81a9-2400-909f-a8ad-506f-9f30.eu.ngrok.io");
+        apiConnection.send("users:get", response -> {
+            System.out.println(response.getContent().toString());
+        }, "922399005282013204");
+        
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb");
         rootLogger.setLevel(Level.OFF);

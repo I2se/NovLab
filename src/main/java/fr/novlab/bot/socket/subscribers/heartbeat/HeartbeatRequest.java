@@ -16,10 +16,10 @@ public class HeartbeatRequest implements Subscriber {
         int timeLeft = response.getInt("timeLeft");
         String question = response.getString("question");
 
-        LOGGER.info("Rcv HB Req : " + msg + " // " + timeLeft + " // " + question);
+        //LOGGER.info("Rcv HB Req : " + msg + " // " + timeLeft + " // " + question);
 
         connection.send("heartbeat:answer", (response1 -> {
-            LOGGER.info("HB Result : " + response1.getStatusCode() + (response1.getStatusCode().equals("500") ? " // " + response1.getContent().getString("error") : ""));
+            //LOGGER.info("HB Result : " + response1.getStatusCode() + (response1.getStatusCode().equals("500") ? " // " + response1.getContent().getString("error") : ""));
         }), question);
     }
 
