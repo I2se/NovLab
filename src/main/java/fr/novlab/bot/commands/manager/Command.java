@@ -1,9 +1,10 @@
 package fr.novlab.bot.commands.manager;
 
+import fr.novlab.bot.Main;
 import fr.novlab.bot.commands.manager.arg.ArgReader;
 import fr.novlab.bot.config.Message;
 import fr.novlab.bot.config.Perms;
-import fr.novlab.bot.database.guilds.GuildService;
+import fr.novlab.bot.data.GuildData;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -11,10 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,11 +56,20 @@ public abstract class Command {
         if (this.commandInfo.autoCheckPermission()) {
             if(!this.commandInfo.permission().equals(Perms.ALL)) {
                 if(this.commandInfo.permission().equals(Perms.DJ)) {
-                    if(!GuildService.getGuild(event.getGuild().getId()).getRoleIdDJ().equals("")) {
-                        Role role = event.getGuild().getRoleById(GuildService.getGuild(event.getGuild().getId()).getRoleIdDJ());
-                        if(!event.getMember().getRoles().contains(role)) {
-                            event.reply(Message.getMessage(Message.DONTHAVEPERMS, event.getGuild())).queue();
+                    Optional<GuildData> guildData = Main.getApiConnection().getCache().requestGuild(event.getGuild().getId()).join();
+                    if (guildData.isPresent()) {
+                        String roleIdDJ = guildData.get().getRoleIdDJ();
+
+                        if (!roleIdDJ.equals("")) {
+                            Role role = event.getGuild().getRoleById(roleIdDJ);
+
+                            if(!event.getMember().getRoles().contains(role)) {
+                                event.reply(Message.getMessage(Message.DONTHAVEPERMS, event.getGuild())).queue();
+                            }
                         }
+                    } else {
+                        event.reply("Internal Error (Command#internallyExecute() -> checking permission)").queue();
+                        return;
                     }
                 }
                 if(this.commandInfo.permission().equals(Perms.ADMIN)) {

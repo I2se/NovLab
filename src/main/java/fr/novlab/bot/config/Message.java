@@ -1,8 +1,12 @@
 package fr.novlab.bot.config;
 
-import fr.novlab.bot.database.guilds.GuildService;
-import fr.novlab.bot.database.guilds.Language;
+import fr.novlab.bot.Main;
+import fr.novlab.bot.data.GuildData;
+import fr.novlab.bot.data.Language;
 import net.dv8tion.jda.api.entities.Guild;
+
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 public enum Message {
 
@@ -64,19 +68,30 @@ public enum Message {
     }
 
     public static String getMessage(Message message, Guild guild, String... args) {
-        Language language = GuildService.getGuild(guild.getId()).getLanguage();
-        if(language.equals(Language.ENGLISH)) {
-            if(message.getMessageEnglish().contains("%s")) {
-                return String.format(message.getMessageEnglish(), args);
+        try {
+            Optional<GuildData> guildData = Main.getApiConnection().getCache().requestGuild(guild.getId()).get();
+            if (guildData.isEmpty()) {
+                return "Error empty";
             }
-            return message.getMessageEnglish();
-        }
-        if(language.equals(Language.FRENCH)) {
-            if(message.getMessageFrench().contains("%s")) {
-                return String.format(message.getMessageFrench(), args);
+
+            Language language = guildData.get().getLanguage();
+
+            if(language.equals(Language.ENGLISH)) {
+                if(message.getMessageEnglish().contains("%s")) {
+                    return String.format(message.getMessageEnglish(), args);
+                }
+                return message.getMessageEnglish();
             }
-            return message.getMessageFrench();
+            if(language.equals(Language.FRENCH)) {
+                if(message.getMessageFrench().contains("%s")) {
+                    return String.format(message.getMessageFrench(), args);
+                }
+                return message.getMessageFrench();
+            }
+            return "Error";
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return "Error exception";
         }
-        return "Error";
     }
 }

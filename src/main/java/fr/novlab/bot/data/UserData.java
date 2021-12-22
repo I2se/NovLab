@@ -12,7 +12,7 @@ import java.util.Date;
 public class UserData {
 
     // From https://stackoverflow.com/a/33989369
-    public static final DateFormat JS_DATE_FORMAT = new SimpleDateFormat("EE MMM d y H:m:s 'GMT'Z (zz)");
+    public static final DateFormat JS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private String discordId;
     private Date creationDate;
@@ -23,12 +23,16 @@ public class UserData {
             this.discordId = json.getString("discordId");
             this.creationDate = JS_DATE_FORMAT.parse(json.getString("creationDate"));
 
-            JSONArray playlistsArray = json.getJSONArray("playlists");
-            this.playlists = new PlaylistData[playlistsArray.length()];
-            for (int i = 0; i < playlistsArray.length(); i++) {
-                PlaylistData playlistData = new PlaylistData();
-                playlistData.fromJson(playlistsArray.getJSONObject(i));
-                this.playlists[i] = playlistData;
+            if (json.has("playlists")) {
+                JSONArray playlistsArray = json.getJSONArray("playlists");
+                this.playlists = new PlaylistData[playlistsArray.length()];
+                for (int i = 0; i < playlistsArray.length(); i++) {
+                    PlaylistData playlistData = new PlaylistData();
+                    playlistData.fromJson(playlistsArray.getJSONObject(i));
+                    this.playlists[i] = playlistData;
+                }
+            } else {
+                this.playlists = new PlaylistData[0];
             }
         } catch (JSONException | ParseException e) {
             e.printStackTrace();

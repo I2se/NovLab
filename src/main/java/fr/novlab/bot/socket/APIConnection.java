@@ -1,7 +1,18 @@
 package fr.novlab.bot.socket;
 
+import fr.novlab.bot.socket.subscribers.guilds.GuildsCreate;
+import fr.novlab.bot.socket.subscribers.guilds.GuildsDelete;
+import fr.novlab.bot.socket.subscribers.guilds.GuildsEdit;
+import fr.novlab.bot.socket.subscribers.guilds.GuildsGet;
 import fr.novlab.bot.socket.subscribers.heartbeat.HeartbeatRequest;
 import fr.novlab.bot.socket.subscribers.heartbeat.HeartbeatTimeout;
+import fr.novlab.bot.socket.subscribers.playlists.PlaylistsCreate;
+import fr.novlab.bot.socket.subscribers.playlists.PlaylistsDelete;
+import fr.novlab.bot.socket.subscribers.playlists.PlaylistsEdit;
+import fr.novlab.bot.socket.subscribers.playlists.PlaylistsGet;
+import fr.novlab.bot.socket.subscribers.users.UsersCreate;
+import fr.novlab.bot.socket.subscribers.users.UsersDelete;
+import fr.novlab.bot.socket.subscribers.users.UsersGet;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -11,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 
 public class APIConnection {
 
@@ -22,6 +36,7 @@ public class APIConnection {
 
     private Socket socket;
     private Map<String, Map<String, Pair<Thread, IRequestCallback>>> requests;
+    private Cache cache;
 
     public APIConnection(AppType appType, String apiKey) {
         this.appType = appType;
@@ -30,6 +45,8 @@ public class APIConnection {
 
     public void start(String uri) {
         try {
+            this.cache = new Cache(this);
+
             this.socket = IO.socket(uri, IO.Options.builder()
                     .setAuth(new HashMap<>() {{
                         put("app_type", appType.getName());
@@ -65,19 +82,17 @@ public class APIConnection {
     public void send(String event, IRequestCallback callback, Object... args) {
         String requestId = this.generateRandomString(64);
 
-        if (callback != null) {
-            Thread thread = new Thread(() -> {
-                try {
-                    Thread.sleep(60000);
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(60000);
 
-                    this.requests.get(event).remove(requestId);
-                } catch (InterruptedException e) {}
-            });
+                this.requests.get(event).remove(requestId);
+            } catch (InterruptedException e) {}
+        });
 
-            this.requests.get(event).put(requestId, Pair.of(thread, callback));
+        this.requests.get(event).put(requestId, Pair.of(thread, callback));
 
-            thread.start();
-        }
+        thread.start();
 
         // Prepend request id to args
         final int length = args.length;
@@ -88,9 +103,49 @@ public class APIConnection {
         this.socket.emit(event, args);
     }
 
+    public CompletableFuture<Response> sendFuture(String event, Object... args) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final Response[] responseResult = { null };
+                CountDownLatch latch = new CountDownLatch(1);
+                this.send(event, response -> {
+                    responseResult[0] = response;
+                    latch.countDown();
+                }, args);
+
+                latch.await();
+                return responseResult[0];
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public Response sendSyncFuture(String event, Object... args) {
+        try {
+            return this.sendFuture(event, args).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void registerSubscribers() {
         this.registerSubscriber(new HeartbeatRequest());
         this.registerSubscriber(new HeartbeatTimeout());
+
+        this.registerSubscriber(new UsersCreate());
+        this.registerSubscriber(new UsersDelete());
+        this.registerSubscriber(new UsersGet());
+
+        this.registerSubscriber(new GuildsCreate());
+        this.registerSubscriber(new GuildsDelete());
+        this.registerSubscriber(new GuildsGet());
+        this.registerSubscriber(new GuildsEdit());
+
+        this.registerSubscriber(new PlaylistsCreate());
+        this.registerSubscriber(new PlaylistsDelete());
+        this.registerSubscriber(new PlaylistsGet());
+        this.registerSubscriber(new PlaylistsEdit());
     }
 
     public void registerSubscriber(Subscriber subscriber) {
@@ -103,9 +158,20 @@ public class APIConnection {
 
     public void registerRequestChannels() {
         this.registerRequestChannel("heartbeat:answer");
+
         this.registerRequestChannel("users:create");
-        this.registerRequestChannel("users:get");
         this.registerRequestChannel("users:delete");
+        this.registerRequestChannel("users:get");
+
+        this.registerRequestChannel("guilds:create");
+        this.registerRequestChannel("guilds:delete");
+        this.registerRequestChannel("guilds:get");
+        this.registerRequestChannel("guilds:edit");
+
+        this.registerRequestChannel("playlists:create");
+        this.registerRequestChannel("playlists:delete");
+        this.registerRequestChannel("playlists:get");
+        this.registerRequestChannel("playlists:edit");
     }
 
     public void registerRequestChannel(String channel) {
@@ -137,5 +203,9 @@ public class APIConnection {
         if (this.socket != null && this.socket.connected()) {
             this.socket.disconnect();
         }
+    }
+
+    public Cache getCache() {
+        return cache;
     }
 }

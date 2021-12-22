@@ -11,7 +11,7 @@ public class GuildData {
 
     private String guildId;
     private String name;
-    private String language;
+    private Language language;
     private String roleIdDJ;
     private Date creationDate;
     private PlaylistData[] playlists;
@@ -20,16 +20,20 @@ public class GuildData {
         try {
             this.guildId = json.getString("guildId");
             this.name = json.getString("name");
-            this.language = json.getString("language");
+            this.language = Language.getFromId(json.getString("language")).orElse(null);
             this.roleIdDJ = json.getString("roleIdDJ");
             this.creationDate = UserData.JS_DATE_FORMAT.parse(json.getString("creationDate"));
 
-            JSONArray playlistsArray = json.getJSONArray("playlists");
-            this.playlists = new PlaylistData[playlistsArray.length()];
-            for (int i = 0; i < playlistsArray.length(); i++) {
-                PlaylistData playlistData = new PlaylistData();
-                playlistData.fromJson(playlistsArray.getJSONObject(i));
-                this.playlists[i] = playlistData;
+            if (json.has("playlists")) {
+                JSONArray playlistsArray = json.getJSONArray("playlists");
+                this.playlists = new PlaylistData[playlistsArray.length()];
+                for (int i = 0; i < playlistsArray.length(); i++) {
+                    PlaylistData playlistData = new PlaylistData();
+                    playlistData.fromJson(playlistsArray.getJSONObject(i));
+                    this.playlists[i] = playlistData;
+                }
+            } else {
+                this.playlists = new PlaylistData[0];
             }
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
@@ -44,7 +48,7 @@ public class GuildData {
         return name;
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 

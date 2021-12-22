@@ -3,19 +3,12 @@ package fr.novlab.bot;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import fr.novlab.bot.commands.music.VolumeCommand;
 import fr.novlab.bot.commands.manager.CommandRegistry;
 import fr.novlab.bot.commands.music.JoinCommand;
+import fr.novlab.bot.commands.music.VolumeCommand;
 import fr.novlab.bot.commands.staff.SetDJ;
 import fr.novlab.bot.config.Config;
-import fr.novlab.bot.database.guilds.GuildData;
-import fr.novlab.bot.database.guilds.GuildService;
-import fr.novlab.bot.database.guilds.Language;
-import fr.novlab.bot.database.playlists.PlaylistData;
 import fr.novlab.bot.listeners.OnGuildJoin;
 import fr.novlab.bot.music.SpotifyHelper;
 import fr.novlab.bot.socket.APIConnection;
@@ -23,46 +16,33 @@ import fr.novlab.bot.socket.AppType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import org.bson.codecs.configuration.CodecProvider;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.Conventions;
-import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
 import java.util.Scanner;
-
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
 
     private static JDA jda;
-    private static MongoCollection<GuildData> collectionGuilds;
-    private static MongoCollection<PlaylistData> collectionPlaylists;
     private static APIConnection apiConnection;
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws LoginException {
+    public static void main(String[] args) throws LoginException, ExecutionException, InterruptedException {
         new Main();
     }
 
-    private Main() throws LoginException {
+    private Main() throws LoginException, ExecutionException, InterruptedException {
         apiConnection = new APIConnection(AppType.BOT, Config.API_KEYS);
-        apiConnection.start("http://3865-2a01-cb05-81a9-2400-909f-a8ad-506f-9f30.eu.ngrok.io");
-        apiConnection.send("users:get", response -> {
-            System.out.println(response.getContent().toString());
-        }, "922399005282013204");
-        
+        apiConnection.start("http://localhost:8000");
+
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("org.mongodb");
         rootLogger.setLevel(Level.OFF);
         LoggerContext loggerContextRefec = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLoggerRefec = loggerContextRefec.getLogger("org.reflections");
         rootLoggerRefec.setLevel(Level.OFF);
-        
+
         try {
             jda = JDABuilder.createDefault(Config.TOKEN)
                     .build()
@@ -94,7 +74,7 @@ public class Main {
     }
 
     public static void executeOnReady() {
-        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.USE_GETTERS_FOR_SETTERS)).build();
+        /*CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION, Conventions.USE_GETTERS_FOR_SETTERS)).build();
         CodecRegistry codecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
         MongoClient mongoClient = MongoClients.create(Config.MONGOURI);
         MongoDatabase mongoDatabase = mongoClient.getDatabase("bot");
@@ -102,7 +82,7 @@ public class Main {
         collectionPlaylists = mongoDatabase.getCollection("playlists", PlaylistData.class).withCodecRegistry(codecRegistry);
         LOGGER.info("Register Collections :");
         LOGGER.info("- Guilds");
-        LOGGER.info("- Playlists");
+        LOGGER.info("- Playlists");*/
         connectionToGuild();
     }
 
@@ -111,7 +91,21 @@ public class Main {
         for (Guild guild : jda.getGuilds()) {
             guild.getAudioManager().closeAudioConnection();
             String guildId = guild.getId();
-            if(GuildService.isRegistered(guildId)) {
+
+            apiConnection.getCache().requestGuild(guildId).thenAccept(opt -> {
+                if (opt.isPresent()) {
+                    fr.novlab.bot.data.GuildData guildData = opt.get();
+
+                    LOGGER.info(" - " + guild.getName());
+                    apiConnection.sendFuture("guilds:edit", guildId, guild.getName(), guildData.getLanguage().getId(), guildData.getRoleIdDJ());
+                } else {
+                    LOGGER.info(" - " + guild.getName() + " (Database Creation)");
+                    apiConnection.sendFuture("guilds:create", guildId);
+                }
+            });
+
+
+            /*if(GuildService.isRegistered(guildId)) {
                 LOGGER.info("- " + guild.getName());
                 GuildService.updateGuild(guildId, guildData -> {
                     guildData.setName(guild.getName());
@@ -120,7 +114,7 @@ public class Main {
                 GuildData guildData = new GuildData(guildId, guild.getName(), Language.ENGLISH, "");
                 GuildService.addGuild(guildData);
                 LOGGER.info("- " + guild.getName() + " (Database Creation)");
-            }
+            }*/
         }
     }
 
@@ -141,14 +135,6 @@ public class Main {
         Main.executeOnReady();
         LOGGER.info("{} is ready", jda.getSelfUser().getAsTag());
         LOGGER.info("===================================");
-    }
-
-    public static MongoCollection<GuildData> getCollectionGuilds() {
-        return collectionGuilds;
-    }
-
-    public static MongoCollection<PlaylistData> getCollectionPlaylists() {
-        return collectionPlaylists;
     }
 
     public static JDA getJda() {
